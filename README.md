@@ -27,6 +27,9 @@ const {
 
     FallbackProvider,
 
+/**     @openmev         */
+    OpenMEVProvider,
+    
     AlchemyProvider,
     CloudflareProvider,
     EtherscanProvider,
