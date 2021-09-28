@@ -2,7 +2,10 @@
 
 "use strict";
 
-import { Network } from "@ethersproject/networks";
+import { Network, Networkish } from "@ethersproject/networks";
+import { defineReadOnly } from "@ethersproject/properties";
+import { ConnectionInfo } from "@ethersproject/web";
+
 import { UrlJsonRpcProvider } from "./url-json-rpc-provider";
 
 import { Logger } from "@ethersproject/logger";
@@ -18,6 +21,8 @@ const logger = new Logger(version);
  */
 const defaultApiKey = "";
 
+
+
 export class OpenMEVProvider extends UrlJsonRpcProvider {
 
     static getApiKey(apiKey: any): any {
@@ -27,11 +32,30 @@ export class OpenMEVProvider extends UrlJsonRpcProvider {
         return apiKey || defaultApiKey;
     }
 
-    static getUrl(network: Network, apiKey?: any): string {
-        logger.warn("🔵 OpenMEV API Key's only require you to sign the message body with your EOA address");
+    /**
 
-        let host = null;
-        switch (network.name) {
+@TODO 
+@NOTE Placeholder for Authenticated Endpoint Access 
+    static getUrl(network?: Networkish, apiKey?: any): ConnectionInfo {
+
+        constructor(network?: Networkish, apiKey?: any) {
+        const provider = new OpenMEVProvider(network, apiKey);
+        const connection = provider.connection;
+        const url = connection.url.replace(/^http/i, "ws").replace("/v2/", "/ws/v2/");
+        super(url, network);
+
+        return new OpenMEVProvider(network, apiKey);
+
+
+     */
+
+ 
+    static getUrl(network: Network, apiKey: any): ConnectionInfo {
+
+    console.log("🔵 OpenMEV API Key's only require you to sign the message body with your EOA address");
+
+        let host: string = null;
+        switch(network ? network.name: "unknown") {
             case "mainnet":
                 host = "https://rpc.openmev.net/eth/v1/";
                 break;
@@ -50,10 +74,30 @@ export class OpenMEVProvider extends UrlJsonRpcProvider {
                 break;
 */       
             default:
-               logger.throwArgumentError("🔴 Error: Unsupported Network", "network", arguments[0]);
+               logger.throwArgumentError("🔴 Error: Unsupported Network",  Logger.errors.INVALID_ARGUMENT, {
+                argument: "network",
+                value: network
+            });
         }
 
+        /** 
+        const connection: ConnectionInfo = {
+            allowGzip: true,
+            url: ("https:/" + "/" + host + "/v2/" + apiKey),
+            throttleCallback: (attempt: number, url: string) => {
+                if (apiKey) {
+                    showThrottleMessage();
+                }
+                return Promise.resolve(true);
+            }
+        };
+
+                return connection;
+    }
+
+*/
         return (host + "?apiKey=" + apiKey);
     }
 }
+
 
